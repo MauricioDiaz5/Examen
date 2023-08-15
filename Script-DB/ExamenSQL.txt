@@ -1,0 +1,107 @@
+--Angel Mauricio Marcos Diaz--
+CREATE DATABASE BD_ANGEL_MAURICIO_MARCOS_DIAZ;
+
+USE BD_ANGEL_MAURICIO_MARCOS_DIAZ;
+
+CREATE TABLE Fabricante(
+codigo INT PRIMARY KEY NOT NULL IDENTITY(1,1), 
+nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Producto(
+codigo INT PRIMARY KEY NOT NULL IDENTITY(1,1), 
+nombre VARCHAR(50) NOT NULL, 
+precio DECIMAL(6,2) NOT NULL, 
+codigo_fabricante INT NOT NULL,
+FOREIGN KEY(codigo_fabricante) REFERENCES Fabricante(codigo)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+INSERT INTO Fabricante(nombre) VALUES
+('Asus'),
+('Lenovo'), 
+('Hewlett-Packard'), 
+('Samsung'),
+('Seagate'),
+('Crucial'),
+('Gigabyte'),
+('Huawei'),
+('Xiaomi');
+
+
+INSERT INTO Producto(nombre, precio, codigo_fabricante) VALUES
+('Disco duro SATA3 1TB', 86.99, 5),
+('Memoria RAM DDR4 8GB', 120 , 6),
+('Disco SSD 1 TB', 150.99 , 4),
+('GeForce GTX 1050Ti', 185 , 7),
+('GeForce GTX 1080 Xtreme', 755 , 6),
+('Monitor 24 LED Full HD', 202 , 1),
+('Monitor 27 LED Full HD', 245.99 , 1),
+('Portátil Yoga 520', 559 , 2),
+('Portátil Ideapd 320', 444 , 2),
+('Impresora HP Deskjet 3720', 59.99 , 3),
+('Impresora HP Laserjet Pro M26nw', 180 , 3);
+
+--Consultas--
+--Lista el nombre de los productos que tienen un precio menor o igual a 120--
+SELECT nombre, precio FROM Producto WHERE precio <= 120;
+
+--Calcula la suma de los precios de todos los productos--
+SELECT SUM(precio) total FROM Producto;
+
+--Devuelve todos los productos que tienen el mismo fabricante--
+SELECT * FROM Producto WHERE codigo_fabricante =(SELECT codigo FROM Fabricante WHERE codigo=1);
+
+--Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos--
+SELECT m.nombre, COUNT(*) AS numero_productos FROM Producto a, Fabricante m WHERE a.codigo_fabricante = m.codigo GROUP BY m.nombre
+HAVING COUNT(*) >= 2;
+
+
+
+
+
+--Creacion de SP--
+
+USE [BD_ANGEL_MAURICIO_MARCOS_DIAZ]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_producto]    Script Date: 15/08/2023 08:25:13 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[sp_producto]
+@nombre_producto VARCHAR(50),
+@precio_producto INT,
+@codigo_fabricador INT
+AS
+BEGIN
+	IF(SELECT COUNT(*) FROM Fabricante WHERE codigo=@codigo_fabricador) > 0
+	BEGIN
+		INSERT INTO Producto(nombre, precio, codigo_fabricante) VALUES
+					(
+					@nombre_producto, 
+					@precio_producto, 
+					@codigo_fabricador
+					);
+	END
+END
+
+
+
+
+USE [BD_ANGEL_MAURICIO_MARCOS_DIAZ]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_PRODUCTOS_LISTA]    Script Date: 15/08/2023 08:13:01 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[SP_PRODUCTOS_LISTA]
+AS
+BEGIN
+	SELECT p.codigo 'Codigo', p.nombre 'Producto', p.precio 'Precio', f.nombre 'Fabricante' FROM Producto p
+	INNER JOIN Fabricante f ON f.codigo = p.codigo_fabricante;
+END
+
+
+
