@@ -1,0 +1,43 @@
+﻿@model List<ListaProductoModel>
+@{
+    ViewData["Title"] = "ConsultaProductos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <div class="card-header">
+    Lista Productos
+  </div>
+  <div class="card-body">
+          <a asp-action="InsertaProducto" asp-controller="Producto" class="btn btn-success" >Crear Nuevo</a>
+          <hr />
+          <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th>Codigo</th>
+                      <th>Producto</th>
+                      <th>Precio</th>
+                      <th>Fabricante</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                @foreach(var itera in Model)
+                {
+                    <tr>
+                        <td>@itera.Codigo</td>
+                        <td>@itera.Producto</td>
+                        <td>@itera.Precio</td>
+                        <td>@itera.Fabricante</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+          </table>
+          <label style="float:right; font-size: 2vw; font-weight:bold">
+              Total = @Model.Count
+          </label>
+  </div>
+</div>
+
+
